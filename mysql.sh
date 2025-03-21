@@ -45,7 +45,7 @@ VALIDATE $? "Starting MySQL server"
 mysql -h mysql.devopz.online -u root -pExpenseApp@1 'show databases;'
 
 
-if[ $? -ne 0 ]
+if [ $? -ne 0 ]
 then
     echo "MySQL Root password not setup" &>>$LOG_FILE_NAME
     mysql_secure_installation --set-root-pass ExpenseApp@1
