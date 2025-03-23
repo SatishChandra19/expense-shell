@@ -42,7 +42,7 @@ VALIDATE $? "enabling MySql server"
 systemctl start mysqld &>>$LOG_FILE_NAME
 VALIDATE $? "Starting MySQL server"
 
-mysql -h mysql.devopz.online -u root -pExpenseApp@1 'show databases';
+mysql -h mysql.devopz.online -u root -e -pExpenseApp@1 'show databases';
 
 
 if [ $? -ne 0 ]
