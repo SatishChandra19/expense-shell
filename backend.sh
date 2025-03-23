@@ -33,35 +33,47 @@ echo "Script started executing at: $TIMESTAMP" &>>$LOG_FILE_NAME
 
 CHECK_ROOT
 
-dnf module disable nodejs -y
+dnf module disable nodejs -y &>>$LOG_FILE_NAME
 VALIDATE $? "Disabling existing default NodeJS"
 
-dnf module enable nodejs:20 -y
+dnf module enable nodejs:20 -y &>>$LOG_FILE_NAME
 VALIDATE $? "Enabling NodeJS 20"
 
-dnf install nodejs -y
+dnf install nodejs -y &>>$LOG_FILE_NAME
 VALIDATE $? "Installing NodeJS"
 
-useradd expense
-VALIDATE $? "Adding User Expense" 
+useradd expense &>>$LOG_FILE_NAME
+VALIDATE $? "Adding Expense User" 
 
-mkdir /app
+mkdir /app &>>$LOG_FILE_NAME
 VALIDATE $? "creating App directory"
 
-curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOG_FILE_NAME
 VALIDATE $? "Downloading Backend"
 
 cd /app
 
-unzip /tmp/backend.zip
+unzip /tmp/backend.zip &>>$LOG_FILE_NAME
 VALIDATE $? "unzip backend"
 
-npm install
+npm install &>>$LOG_FILE_NAME
 VALIDATE $? "Installing Dependencies"
 
 cp /home/ec2-user/expense-shell/backend.service vim /etc/systemd/system/backend.service
 
 # Prepare MySQL schema
 
-dnf install mysql -y
-VALIDATE $?
+dnf install mysql -y &>>$LOG_FILE_NAME
+VALIDATE $? "Installing MySQL client"
+
+mysql -h mysql.devopz.online -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOG_FILE_NAME
+VALIDATE $?  "setting up the transactions schema and tables"
+
+systemctl daemon-reload &>>$LOG_FILE_NAME
+VALIDATE $? "deamon reload"
+
+systemctl enable backend &>>$LOG_FILE_NAME
+VALIDATE $? "enabling backend"
+
+systemctl start backend &>>$LOG_FILE_NAME
+VALIDATE $? "starting backend"
