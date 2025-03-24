@@ -73,7 +73,7 @@ cp /home/ec2-user/expense-shell/backend.service /etc/systemd/system/backend.serv
 dnf install mysql -y &>>$LOG_FILE_NAME
 VALIDATE $? "Installing MySQL client"
 
-mysql -h mysql.devopz.online -uroot -pExpenseApp@1 /app/schema/backend.sql &>>$LOG_FILE_NAME
+mysql -h mysql.devopz.online -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOG_FILE_NAME
 VALIDATE $?  "setting up the transactions schema and tables"
 
 systemctl daemon-reload &>>$LOG_FILE_NAME
